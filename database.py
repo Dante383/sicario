@@ -5,10 +5,11 @@ import sicario
 # Sicario C&C server
 # database controller
 
-import mysqldb
+import sqlite3
 
-credentials = {}
-credentials['host'] = '127.0.0.1'
-credentials['db'] = 'sicario'
-credentials['user'] = 'root'
-credentials['pass'] = 
+class Database:
+	def __init__ (self, config):
+		try:
+			self.handler = sqlite3.connect(config['dbname'])
+		except:
+			raise IOError('Failed to connect to {}!'.format(config['dbname']))

@@ -3,6 +3,7 @@
 import log
 import listener
 import socket_client
+import database
 
 version = '0.1'
 
@@ -26,7 +27,15 @@ def main (version, args):
 		listener.listen(args.host, int(args.port), socket_client.Client)
 	except IOError as e:
 		log.log('Exception: {}'.format(e))
-		log.log('Failed to start listener! Exitting..')
+		log.log('Failed to start listener! Exiting..')
+		sys.exit()
+		
+	log.log('Trying to connect to database...')
+	try:
+		database({'dbname':'sicario'})
+	except IOError as e:
+		log('Exception: {}'.format(e))
+		log('Failed to connect to database! Exiting..')
 		sys.exit()
 	
 def exit ():
