@@ -9,6 +9,7 @@ import sqlite3
 
 class Database:
 	handler = False
+	cursor = False
 	
 	def __init__ (self, config):
 		try:
@@ -16,6 +17,7 @@ class Database:
 		except:
 			self.handler = False
 			raise IOError('Failed to connect to {}!'.format(config['filename']))
+		self.cursor = self.handler.cursor()
 
 	def getHandler (self):
 		return self.handler

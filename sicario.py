@@ -1,11 +1,14 @@
 #!/usr/bin/python
 
+# Error codes (client side)
+# 1 - hash does not exist in database
+
 import log
 import listener
 import socket_client
 import database
 
-version = '0.1'
+version = '0.2'
 
 import argparse
 import sys
@@ -33,8 +36,10 @@ class Sicario:
 			log('Failed to connect to a database! Exiting..')
 			sys.exit()
 		log.log('Connected to database!')
-		print str(db.handler)
-		self.db_handler = db.handler
+
+		# Actually, we won't do anything with database here. This section is (currently) only to test if 
+		# connection to database can be made. We don't want database to crash right before adding
+		# new client, do we?
 		
 		log.log('Starting listener at {}:{}...'.format(args.host, args.port))
 		
@@ -44,11 +49,6 @@ class Sicario:
 			log.log('Exception: {}'.format(e))
 			log.log('Failed to start listener! Exiting..')
 			sys.exit()
-			
-		
-	def get_database(self):
-		print str(self.db_handler)
-		return self.db_handler
 		
 	def exit (self):
 		log.log('Exitting...')

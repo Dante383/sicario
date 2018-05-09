@@ -7,6 +7,7 @@ import sicario
 
 import socket
 import threading
+import sys
 
 sema = threading.Lock()
 threads = []
@@ -25,7 +26,7 @@ def listen (host, port, socketClient):
 	except KeyboardInterrupt:
 		for t in threads:
 			t.stop()
-		sicario.exit()
+		sys.exit()
 	
 	for t in threads:
 		t.join()
