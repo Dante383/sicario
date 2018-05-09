@@ -23,6 +23,9 @@ class Client (Thread):
 	def run (self):
 		clients.append(self)
 		log.log('{} connected! (socket level) ({} clients now)'.format(self.sock.getpeername()[0], len(clients)))
+
+		highClient = client.Client(self.sock.getpeername()[0], self)
+		
 		while self.connection == True:
 			data = self.sock.recv(1024).strip('\n')
 			if not data: 
@@ -31,7 +34,6 @@ class Client (Thread):
 				self.sock.close()
 				break
 				
-			highClient = client.Client(self.sock.getpeername()[0], self)
 			highClient.on_command(data)
 
 	def send(self, arg):
