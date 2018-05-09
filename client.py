@@ -3,6 +3,7 @@
 import sicario 
 import commands
 import log
+import database as db
 
 # Sicario C&C server
 # High level client class
@@ -35,6 +36,8 @@ class Client:
 			self.send_command(['set','key',key])
 			
 			# now, we should add this to a database
+			database = sicario.Sicario.get_database().handler
+			print database.execute('SELECT * FROM `sqlite_master` WHERE `type` = \'table\'')
 	
 	def send_command (self, args):
 		self.raw_send(commands.encode(args))

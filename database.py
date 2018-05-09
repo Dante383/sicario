@@ -8,8 +8,14 @@ import sicario
 import sqlite3
 
 class Database:
+	handler = False
+	
 	def __init__ (self, config):
 		try:
-			self.handler = sqlite3.connect(config['dbname'])
+			self.handler = sqlite3.connect(config['filename'])
 		except:
-			raise IOError('Failed to connect to {}!'.format(config['dbname']))
+			self.handler = False
+			raise IOError('Failed to connect to {}!'.format(config['filename']))
+
+	def getHandler (self):
+		return self.handler
