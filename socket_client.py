@@ -41,8 +41,8 @@ class Client (Thread):
 				log.log('{} disconnected! (socket level, invalid packet signature) ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
 				self.sock.close()
 
-			if data[2:2] != '00': # more packets incoming
-				
+			if data[2:4] != '00': # more packets incoming
+				print('more packets')
 			else:
 				highClient.on_command(data[5:-1])
 
