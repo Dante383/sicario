@@ -25,16 +25,26 @@ class Client (Thread):
 		log.log('{} connected! (socket level) ({} clients now)'.format(self.sock.getpeername()[0], len(clients)))
 
 		highClient = client.Client(self.sock.getpeername()[0], self)
-		
+
 		while self.connection == True:
-			data = self.sock.recv(1024).strip('\n')
+			data = self.sock.recv(2048).strip('\n')
 			if not data: 
 				clients.remove(self)
 				log.log('{} disconnected! (socket level) ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
 				self.sock.close()
 				break
+			
+			# Sicario packet looks like this: SCXX(actual data), where SC is signature and XX number of incoming packets (usually 00, unless you're sending something big)
+
+			if data[:2] != 'SC': # invalid signature
+				clients.remove(self)
+				log.log('{} disconnected! (socket level, invalid packet signature) ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
+				self.sock.close()
+
+			if data[2:2] != '00': # more packets incoming
 				
-			highClient.on_command(data)
+			else:
+				highClient.on_command(data[5:-1])
 
 	def send(self, arg):
 		self.sock.send(arg)
