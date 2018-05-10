@@ -54,12 +54,16 @@ def main(ip, port):
 
 		result = subprocess.check_output([command[1]])
 		
-		if (len(result > 2048)): # we have to split data into smaller packets
-			packet_count = math.ceil(len(result)/2048)
+		if (len(result) > 2042): # we have to split data into smaller packets
+			packet_count = int(math.ceil(len(result)/2042))
 			for x in range(packet_count):
-				s.send('SC{0:0>2}({})'.format(packet_count-x, result[x*2048:(x+1)*2048]))
+				s.send('SC{}({})'.format(str(packet_count-x).zfill(2), result[x*2042:(x+1)*2042]))
+				print('SC{}({})'.format(str(packet_count-x).zfill(2), result[x*2042:(x+1)*2042]))
 		else:
 			s.send('SC00({})'.format(result))
+
+	s.recv(2048)
+	s.close()
 
 
 
