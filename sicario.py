@@ -30,7 +30,7 @@ class Sicario:
 		
 		log.log('Trying to connect to database...')
 		try:
-			db = database.Database({'filename':'db/sicario'})
+			db = database.Database({'filename':'db/sicario.db'})
 		except IOError as e:
 			log('Exception: {}'.format(e))
 			log('Failed to connect to a database! Exiting..')
