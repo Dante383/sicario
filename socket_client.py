@@ -16,7 +16,7 @@ class Client (Thread):
 	def __init__ (self, sock, sema):
 		super(Client, self).__init__()
 		self.sock = sock
-		self.sock.settimeout(10)
+		self.sock.settimeout(120)
 		self.sema = sema
 		self.connection = True
 		self.packets_incoming = 0

@@ -22,7 +22,7 @@ class Client:
 		if self.pending_job: # server is currently waiting for the results of sent command
 			response = command
 			db = database.Database({'filename':'db/sicario.db'})
-			db.cursor.execute('''UPDATE jobs SET processed = 0, result = ? WHERE id = ?''', [command, self.pending_job])
+			db.cursor.execute('''UPDATE jobs SET processed = 1, result = ?, executed_on = datetime('now') WHERE id = ?''', [command, self.pending_job])
 			db.handler.commit()
 			db.handler.close()
 
