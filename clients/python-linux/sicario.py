@@ -37,7 +37,7 @@ class Sicario:
 			self.__send('register')
 			key = self.__parse_command(self.__receive())[2]
 			with open('/etc/sicario/sicario.conf', 'w') as f:
-				f.write('{},{},{}'.format(self.host, self.port, key, self.interval))
+				f.write('{},{},{},{}'.format(self.host, self.port, key, self.interval))
 				f.close()
 		else:
 			self.__send(self.__build_command(['login', self.key]))
