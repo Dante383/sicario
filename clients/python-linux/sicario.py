@@ -36,8 +36,8 @@ class Sicario:
 		if not self.key:
 			self.__send('register')
 			key = self.__parse_command(self.__receive())[2]
-			with open('/etc/sicario/sicario.conf', 'w') as f:
-				f.write('{},{},{},{}'.format(self.host, self.port, key, self.interval))
+			with open('/etc/sicario/sicario.conf', 'w+') as f:
+				f.write('{},{},{},{}'.format(self.host, self.port.strip(), key.strip(), self.interval))
 				f.close()
 		else:
 			self.__send(self.__build_command(['login', self.key]))
@@ -65,7 +65,7 @@ class Sicario:
 			if command[1] == 'interval':
 				self.daemon.interval = command[2]
 				self.__send('ok')
-				with open('/etc/sicario/sicario.conf', 'w') as f:
+				with open('/etc/sicario/sicario.conf', 'w+') as f:
 					f.write('{},{},{},{}'.format(self.host, self.port, self.key, command[2]))
 					f.close()
 
