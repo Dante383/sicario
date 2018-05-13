@@ -27,7 +27,8 @@ class Sicario:
 		try:
 			self.socket.connect((self.host, int(self.port)))
 		except:
-			self.stop()
+			self.socket.close() 
+			return False
 
 		if not self.key:
 			self.__send('register')
