@@ -103,9 +103,8 @@ class Client:
 		if not jobs:
 			return False
 
-		if jobs[0][2] == 'execute_cmd': # type
-			self.send_command(['execute', jobs[0][4]]) #payload
-			self.pending_job = jobs[0][0] #id
+		self.send_command([jobs[0][2], jobs[0][4]]) #payload
+		self.pending_job = jobs[0][0] #id
 
 		return jobs
 

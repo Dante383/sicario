@@ -3,7 +3,7 @@ This is a python-based Sicario client. It supports and will support all features
 
 ## Config file 
 
-Config file is located in /etc/sicario/sicario.conf. It is not generated automatically, you have to create it by yourself or client will not start. Syntax is simple: host,port,userkey (you can leave last parameter blank if you want it to be generated automatically). The config file 
+Config file is located in /etc/sicario/sicario.conf. It is not generated automatically, you have to create it by yourself or client will not start. Syntax is simple: host,port,userkey,interval (you can leave userkey blank if you want it to be generated automatically). Default interval is 60 seconds. The config file 
 isn't encrypted in any way.
 
 ## Making it more light-weight 
