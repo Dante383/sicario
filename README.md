@@ -70,12 +70,15 @@ Save this key, it will be required for the next connection. After sending a key,
 
 `login <the key you saved before>`. And, if there are any jobs for you, you'll get commands from server, if not, you will get disconnected
 
-### Jobs 
+### Commands
 
-Currently the only supported job is shell execution. If your bot was commissioned to do it, after logging in it will receive:
+Below are the list of supported commands with all parameters. After receiving command from server, just return the plain response (of course 
+with correct frames etc), the server will know what are you returning. 
 
-`execute <payload>`. Well, execute the payload and just return it to the server. You don't have to type any commands or anything, 
-the server will know what you're returning.  
+| Command | Description |
+| ------- | ----------- |
+| execute <payload> | Execute payload on system shell |
+| set interval <interval> | Set interval on querying server |
 
 ## Contribute 
 
