@@ -8,7 +8,6 @@ import sicario
 
 import datetime
 
-now = datetime.datetime.now()
-
 def log (text):
+	now = datetime.datetime.now()
 	print('[{}] {}'.format(now.strftime("%Y-%m-%d %H:%M:%S"), text))

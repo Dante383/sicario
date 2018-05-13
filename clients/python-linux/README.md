@@ -1,0 +1,11 @@
+# Overview
+This is a python-based Sicario client. It supports and will support all features, but it's not a hidden client (leaves it's traces in /etc/, has it's own service). It's written in Python 2.7
+
+## Config file 
+
+Config file is located in /etc/sicario/sicario.conf. It is not generated automatically, you have to create it by yourself or client will not start. Syntax is simple: host,port,userkey (you can leave last parameter blank if you want it to be generated automatically). The config file 
+isn't encrypted in any way.
+
+## Making it more light-weight 
+
+If you don't need all of it's features (for example, camera module because you know that the target won't have it) you can just remove them from modules/, the app will deal with it. 

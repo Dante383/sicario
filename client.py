@@ -29,7 +29,8 @@ class Client:
 			log.log('{} (key {}) successfully executed job #{}!'.format(self.address, self.key, self.pending_job))
 			self.pending_job = False
 
-			self.__check_jobs()
+			if not self.__check_jobs():
+				self.disconnect()
 			return True
 
 		

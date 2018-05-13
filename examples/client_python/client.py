@@ -1,3 +1,5 @@
+from __future__ import division # In python 2.7, division returns int, not float. This creates problems with multi packets
+
 # Sicario dev client 
 # Warning: This client shouldn't be used anywhere, its just a presentation to help developers create their own clients
 # Also, it lacks a lot of functionality, it can only execute one job at once, and supports only command execution.
@@ -35,14 +37,14 @@ def main(ip, port):
 	else:
 		s.send('SC00(register)')
 
-	response = s.recv(1024)
+	response = s.recv(2048)
 
 	if not response:
 		print('[*] Got empty response - nothing to do! Exitting...')
 		sys.exit(0)
 
 	# response is present, so we gotta parse it
-	command = response.split(' ')
+	command = response[5:-1].split(' ')
 
 	if (command[0] == 'set'):
 		if (command[1] == 'key'):

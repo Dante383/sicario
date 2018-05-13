@@ -30,7 +30,6 @@ class Client (Thread):
 
 		while self.connection == True:
 			data = self.sock.recv(2048).strip('\n')
-			print(data)
 			if not data: 
 				clients.remove(self)
 				log.log('{} disconnected! (socket level) ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
@@ -52,12 +51,18 @@ class Client (Thread):
 					self.packets_incoming = 0
 					highClient.on_command(self.buffer)
 					self.buffer = ''
-					print('received')
 			else:
 				highClient.on_command(data[5:-1])
 
 	def send(self, arg):
-		self.sock.send(arg)
+		if (len(arg) > 2042): # we have to split data into smaller packets
+			packet_count = int(math.ceil(len(arg)/2042))
+			for x in range(packet_count):
+				self.sock.send('SC{}({})'.format(str(packet_count-x).zfill(2), arg[x*2042:(x+1)*2042]))
+		elif (len(arg) == 0):
+			self.sock.send('')
+		else:
+			self.sock.send('SC00({})'.format(arg))
 		
 	def stop(self):
 		log.log('{} got disconnected by server! ({} clients now)'.format(self.sock.getpeername()[0], len(clients)-1))
