@@ -84,6 +84,9 @@ class Client:
 					log.log('{} (key {}) updated himself successfully [0 jobs pending].'.format(self.address, self.key))
 					self.disconnect()
 
+				db.handler.commit()
+				db.handler.close()
+
 
 	
 	def send_command (self, args):
