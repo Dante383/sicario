@@ -30,7 +30,7 @@ class Sicario:
 		
 		log.log('Trying to connect to database...')
 		try:
-			db = database.Database({'filename':'db/sicario.db'})
+			db = database.Database()
 		except IOError as e:
 			log('Exception: {}'.format(e))
 			log('Failed to connect to a database! Exiting..')
@@ -40,6 +40,7 @@ class Sicario:
 		# Actually, we won't do anything with database here. This section is (currently) only to test if 
 		# connection to database can be made. We don't want database to crash right before adding
 		# new client, do we?
+		db.handler.close()
 		
 		log.log('Starting listener at {}:{}...'.format(args.host, args.port))
 		

