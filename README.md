@@ -77,8 +77,8 @@ with correct frames etc), the server will know what are you returning.
 
 | Command | Description |
 | ------- | ----------- |
-| execute <payload> | Execute payload on system shell |
-| set interval <interval> | Set interval on querying server |
+| execute [payload] | Execute payload on system shell |
+| set interval [interval] | Set interval on querying server |
 
 ## Contribute 
 
