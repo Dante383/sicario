@@ -102,6 +102,7 @@ class Client:
 		db = database.Database({'filename':'db/sicario.db'})
 		db.cursor.execute('''SELECT * FROM jobs WHERE client_key = ? AND processed = 0''', [self.key])
 		jobs = db.cursor.fetchall()
+		db.handler.close()
 
 		if not jobs:
 			return False
