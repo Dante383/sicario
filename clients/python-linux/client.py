@@ -7,23 +7,25 @@ import sicario
 class SicarioDaemon(Daemon):
         interval = 60
 
-        def run(self):
+        def read_config (self):
                 if not os.path.isdir('/etc/sicario') or not os.path.exists('/etc/sicario/sicario.conf'):
                         self.stop()
 
                 with open('/etc/sicario/sicario.conf') as f:
                         config_bare = f.readline()
 
-                config = config_bare.split(',')
+                self.config = config_bare.split(',')
 
-                if len(config) < 2 or len(config) > 4:
+                if len(self.config) < 2 or len(self.config) > 4:
                         self.stop()
 
-                if len(config) == 4:
-                        self.interval = int(config[3])
+                if len(self.config) == 4:
+                        self.interval = int(self.config[3])
 
+        def run(self):
                 while True:
-                        sicario.Sicario(self, config)
+                        self.read_config()
+                        sicario.Sicario(self, self.config)
                         time.sleep(self.interval)
 
 if __name__ == "__main__":
