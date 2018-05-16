@@ -20,28 +20,34 @@ class Client:
 	def on_command (self, command):
 
 		if self.pending_job: # server is currently waiting for the results of sent command
-			response = command
 			db = database.Database()
-			db.cursor.execute('''UPDATE jobs SET processed = 1, result = %s WHERE id = %s''', [command, self.pending_job])
+			db.cursor.execute('''UPDATE jobs SET processed = 1, result = %s WHERE id = %s''', [command, self.pending_job['id']])
+			db.handler.commit()
+
+			if self.pending_job['type'] == 'get':
+				if self.pending_job['payload'] == 'architecture':
+					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE userkey = %s''', [command, self.key])
+				elif self.pending_job['payload'] == 'system':
+					db.cursor.execute('''UPDATE clients SET system = %s WHERE userkey = %s''', [command, self.key])
 			db.handler.commit()
 			db.handler.close()
 
-			log.log('{} (key {}) successfully executed job #{}!'.format(self.address, self.key, self.pending_job))
+			log.log('{} (key {}) successfully executed job #{}!'.format(self.address, self.key, self.pending_job['id']))
 			self.pending_job = False
 
 			if not self.__check_jobs():
+				self.__is_missing_data()
 				self.disconnect()
 			return True
 
 		
 		# arguments[0] is the command name
 		arguments = commands.parse(command)
+		db = database.Database()
 		
 		if self.key == False and arguments[0] != 'register' and arguments[0] != 'login':
 			self.disconnect()
 			return False
-
-		db = database.Database()
 		
 		if not self.key:
 			# is it new member? let's check if he provided his key
@@ -55,10 +61,10 @@ class Client:
 				# now, we should add this to a database
 				db.cursor.execute('''INSERT INTO clients (userkey, ip, created_on, updated_on) VALUES (%s, %s, NOW(), NOW())''', [key, self.address])
 
+				self.disconnect()
+
 				db.handler.commit()
 				db.handler.close()
-
-				self.disconnect()
 
 			elif len(arguments) == 2 and len(arguments[1]) == 32:
 				# already registered member
@@ -83,6 +89,7 @@ class Client:
 					log.log('{} (key {}) updated himself successfully [{} jobs pending]'.format(self.address, self.key, len(jobs)))
 				else:
 					log.log('{} (key {}) updated himself successfully [0 jobs pending].'.format(self.address, self.key))
+					self.__is_missing_data()
 					self.disconnect()
 
 				db.handler.commit()
@@ -109,11 +116,31 @@ class Client:
 			return False
 
 		self.send_command([jobs[0]['type'], jobs[0]['payload']]) #payload
-		self.pending_job = jobs[0]['id'] #id
+		self.pending_job = jobs[0]
 
 		return jobs
 
+	def __is_missing_data (self):
+		if not self.key:
+			return False
 
+		db = database.Database()
+
+		db.cursor.execute('SELECT * FROM clients WHERE userkey=%s', [self.key])
+		client = db.cursor.fetchone()
+
+		if not client:
+			return False
+
+		if not client['architecture']:
+			db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', 'architecture'])
+		
+		if not client['system']:
+			db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', 'system'])
+
+		db.handler.commit()
+		db.handler.close()
+		return True
 
 	def disconnect (self):
 		self.socket.stop()

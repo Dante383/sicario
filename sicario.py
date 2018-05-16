@@ -31,7 +31,7 @@ class Sicario:
 		log.log('Trying to connect to database...')
 		try:
 			db = database.Database()
-		except IOError as e:
+		except (IOError, TypeError) as e:
 			log('Exception: {}'.format(e))
 			log('Failed to connect to a database! Exiting..')
 			sys.exit()
