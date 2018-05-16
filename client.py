@@ -29,6 +29,8 @@ class Client:
 					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE userkey = %s''', [command, self.key])
 				elif self.pending_job['payload'] == 'system':
 					db.cursor.execute('''UPDATE clients SET system = %s WHERE userkey = %s''', [command, self.key])
+				elif self.pending_job['payload'] == 'interval':
+					db.cursor.execute('''UPDATE clients SET interval = %s WHERE userkey = %s''', [command, self.key])
 			db.handler.commit()
 			db.handler.close()
 

@@ -21,6 +21,7 @@ CREATE TABLE `clients` (
   `id` int(11) NOT NULL,
   `userkey` varchar(32) NOT NULL,
   `ip` varchar(16) NOT NULL,
+  `interval` int(11) DEFAULT 60,
   `architecture` varchar(8) DEFAULT NULL,
   `system` varchar(16) DEFAULT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
