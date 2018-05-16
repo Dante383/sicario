@@ -8,10 +8,11 @@ import listener
 import socket_client
 import database
 
-version = '0.2'
+version = '0.1'
 
 import argparse
 import sys
+import requests
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', dest='host',
@@ -27,8 +28,19 @@ class Sicario:
 	def __init__ (self, version, args):
 		
 		log.log('Sicario C&C server {} starting...'.format(version))
-		
-		log.log('Trying to connect to database...')
+
+		log.log('Checking for new version..')
+
+		r = requests.get('https://api.github.com/repos/Dante383/Sicario/releases/latest')
+		if r.status_code != 200:
+			log.log('Failed to check for new version!')
+
+		if r.json()['tag_name'] != version: 
+			log.log('Sicario isn\'t up-to-date! If your C&C server isn\'t up-to-date, then your clients aren\'t too.')
+			log.log('You really don\'t want that.')
+		else:
+			log.log('Sicario is up to date.')
+
 		try:
 			db = database.Database()
 		except (IOError, TypeError) as e:
