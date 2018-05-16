@@ -6,30 +6,12 @@ only shell commands executions, but it's WIP. Stay tuned or contribute
 
 ## Getting Started 
 
-There is nothing easier than deploying Sicario server. Just clone the repository, and in main directory type:
+There is nothing easier than deploying Sicario server. Just clone the repository, update credentials in database.py and in main directory type:
 `python sicario.py`
 And this is it. You may use --host and --port parameters. 
 
-After running, it will create sicario.db file in 'db' directory. You may change the name of the file, however it does require a 
-few changes in code, and to be honest, I don't see a reason to. 
-
-Anyway. Now you run your clients, and after they'll register, you'll see them registered in the database. Now you can add jobs for them
-(there will be CLI for that, maybe even GUI, but remember that this is still very alpha version of this project). But you gotta open 
-your database file first. I use "DB Browser for SQLite". I think it's co-platform but not sure. So, after opening file browse
-'clients' table and search for the one you want to add job for. Copy his hash and insert record into 'jobs' table. Here's a structure:
-
-```
-client_key = the hash you just copied
-type = currently only execute_cmd is available 
-processed = leave that at 0 or the command will not be executed
-payload = the command you want to execute
-result = leave that empty
-executed_on = leave that empty
-```
-
-But when will your command be executed, you'd ask. And I'll be really pleasant to answer you: it won't. Okay, it will, but not
-automatically. The idea is for bots to connect to the server every minute (probably only for high-priority bots, it should be also customizable) and ask for their tasks to do. Currently there aren't even clients to do this (excepting that one, shitty python example) so, 
-uh, you know. (Remember, you can always contribute. I'd apreciate that)
+Now you run your clients, and after they'll register, you'll see them registered in the database. Now you can add jobs for them. 
+Update credentials in cli/add_job.py. Now run add_job.py, and simply answer the questions. Easy like that.
 
 ## TCP/IP, Bitch!
 
@@ -79,8 +61,11 @@ with correct frames etc), the server will know what are you returning.
 | ------- | ----------- |
 | execute [payload] | Execute payload on system shell |
 | set interval [interval] | Set interval on querying server |
+| get architecture | return architecture, should be compatibible with python's platform module |
+| get system | same as above |
+| get interval | return interval |
 
 ## Contribute 
 
-What much to say. What is needed is: Windows client, MacOS client, Linux client, Android client.. You can submit to repo whatever you want 
+What much to say. What is needed is: Windows client, MacOS client, Android client.. You can submit to repo whatever you want 
 and i'll accept it. But those are the most needed right now. Good luck!
