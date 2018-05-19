@@ -34,12 +34,12 @@ class Sicario:
 		r = requests.get('https://api.github.com/repos/Dante383/Sicario/releases/latest')
 		if r.status_code != 200:
 			log.log('Failed to check for new version!')
-
-		if r.json()['tag_name'] != version: 
-			log.log('Sicario isn\'t up-to-date! If your C&C server isn\'t up-to-date, then your clients aren\'t too.')
-			log.log('You really don\'t want that.')
 		else:
-			log.log('Sicario is up to date.')
+			if r.json()['tag_name'] != version: 
+				log.log('Sicario isn\'t up-to-date! If your C&C server isn\'t up-to-date, then your clients aren\'t too.')
+				log.log('You really don\'t want that.')
+			else:
+				log.log('Sicario is up to date.')
 
 		try:
 			db = database.Database()
