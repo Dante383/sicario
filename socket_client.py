@@ -39,12 +39,14 @@ class Client (Thread):
 			# Sicario packet looks like this: SCXX(actual data), where SC is signature and XX number of incoming packets (usually 00, unless you're sending something big)
 
 			if data[:2] != 'SC': # invalid signature
-				clients.remove(self)
-				log.log('{} disconnected! (socket level, invalid packet signature) ({} clients left)'.format(self.sock.getpeername()[0], len(clients)))
-				self.sock.close()
+				self.stop('invalid packet signature')
 
 			if data[2:4] != '00': # more packets incoming
-				self.packets_incoming = int(float(data[2:4]))
+				try:
+					self.packets_incoming = int(float(data[2:4]))
+				except:
+					self.stop('invalid packet structure')
+					
 				self.buffer += data[5:-1]
 
 				if self.packets_incoming == 1: # this was the last packet
@@ -64,8 +66,11 @@ class Client (Thread):
 		else:
 			self.sock.send('SC00({})'.format(arg))
 		
-	def stop(self):
-		log.log('{} got disconnected by server! ({} clients now)'.format(self.sock.getpeername()[0], len(clients)-1))
+	def stop(self, reason=''):
+		if reason == '':
+			log.log('{} got disconnected by server! ({} clients now)'.format(self.sock.getpeername()[0], len(clients)-1))
+		else:
+			log.log('{} got disconnected by server ({})! ({} clients now)'.format(self.sock.getpeername()[0], reason, len(clients)-1))
 		self.connection = False
 		self.sock.close()
 		clients.remove(self)
