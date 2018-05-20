@@ -1,4 +1,5 @@
 from __future__ import division
+from psutil import virtual_memory
 import socket, subprocess, os, math, platform
 
 class Sicario:
@@ -75,6 +76,10 @@ class Sicario:
 				self.__send(platform.architecture()[0])
 			elif command[1] == 'system':
 				self.__send(platform.system())
+			elif command[1] == 'system_ver':
+				self.__send(platform.version())
+			elif command[1] == 'ram':
+				self.__send(str(virtual_memory().total/1024/1024))
 
 
 
