@@ -16,6 +16,7 @@ class Client:
 		self.socket = socket
 		self.pending_job = False
 		self.key = False
+		self.id = False
 	
 	def on_command (self, command):
 
@@ -26,11 +27,11 @@ class Client:
 
 			if self.pending_job['type'] == 'get':
 				if self.pending_job['payload'] == 'architecture':
-					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE userkey = %s''', [command, self.key])
+					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE id = %s''', [command, self.id])
 				elif self.pending_job['payload'] == 'system':
-					db.cursor.execute('''UPDATE clients SET system = %s WHERE userkey = %s''', [command, self.key])
+					db.cursor.execute('''UPDATE clients SET system = %s WHERE id = %s''', [command, self.id])
 				elif self.pending_job['payload'] == 'interval':
-					db.cursor.execute('''UPDATE clients SET interval = %s WHERE userkey = %s''', [command, self.key])
+					db.cursor.execute('''UPDATE clients SET interval = %s WHERE id = %s''', [command, self.id])
 			db.handler.commit()
 			db.handler.close()
 
@@ -82,7 +83,9 @@ class Client:
 					self.disconnect()
 					return False
 
-				db.cursor.execute('''UPDATE clients SET updated_on = NOW(), ip = %s WHERE userkey=%s''', [self.address, self.key])
+				self.id = client['id']
+
+				db.cursor.execute('''UPDATE clients SET updated_on = NOW(), ip = %s WHERE id=%s''', [self.address, self.id])
 
 				# now we're going to check for pending commands (jobs)
 				jobs = self.__check_jobs()
