@@ -8,4 +8,4 @@ isn't encrypted in any way.
 
 ## Making it more light-weight 
 
-If you don't need all of it's features (for example, camera module because you know that the target won't have it) you can just remove them from modules/, the app will deal with it. 
+If you don't need all of it's features (for example, camera module because you know that the target won't have it) you can just remove them from modules/, the client will deal with it. (It would be nice to mention, that currently this client doesn't support modules)

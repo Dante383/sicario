@@ -64,6 +64,8 @@ with correct frames etc), the server will know what are you returning.
 | get architecture | return architecture, should be compatibible with python's platform module |
 | get system | same as above |
 | get interval | return interval |
+| get system_ver | return system version |
+| get ram | return total ram in megabytes |
 
 ## Contribute 
 
