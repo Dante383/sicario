@@ -100,6 +100,9 @@ class Client:
 				db.handler.commit()
 				db.handler.close()
 
+			else:
+				self.disconnect()
+
 
 	
 	def send_command (self, args):
