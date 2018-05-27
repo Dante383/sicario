@@ -67,6 +67,16 @@ with correct frames etc), the server will know what are you returning.
 | get system_ver | return system version |
 | get ram | return total ram in megabytes |
 
+## Modules 
+
+Sicario server supports modules. TODO: detailed tutorial on making one, but here are currently supported hooks:
+
+| Hook name | Description | Arguments |
+| --------- | ----------- | --------- |
+| on_client_connect | Triggers when client connect on socket level | client IP address |
+| on_client_disconnect | Triggers when client disconnect from server. | client IP address, reason (optional, string) |
+| on_client_auth | Triggers when client authenticate himself, succesfully or not. | client key, client database ID or False if failed |
+
 ## Contribute 
 
 What much to say. What is needed is: Windows client, MacOS client, Android client.. You can submit to repo whatever you want 

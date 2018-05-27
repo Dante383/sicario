@@ -14,6 +14,7 @@ class Client:
 	def __init__ (self, address, socket):
 		self.address = address
 		self.socket = socket
+		self.module_manager = socket.module_manager
 		self.pending_job = False
 		self.key = False
 		self.id = False
@@ -82,12 +83,14 @@ class Client:
 				client = db.cursor.fetchone()
 
 				if not client:
+					self.module_manager.trigger_hook('on_client_auth', self.key, False)
 					self.send_command(['error', '1'])
 					db.handler.close()
 					self.disconnect()
 					return False
 
 				self.id = client['id']
+				self.module_manager.trigger_hook('on_client_auth', self.key, self.id)
 
 				db.cursor.execute('''UPDATE clients SET updated_on = NOW(), ip = %s WHERE id=%s''', [self.address, self.id])
 

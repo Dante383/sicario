@@ -1,18 +1,21 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Error codes (client side)
 # 1 - hash does not exist in database
 
 import log
 import listener
-import socket_client
 import database
+import modulemanager
 
 version = '0.1'
 
 import argparse
 import sys
 import requests
+import os
+import importlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--host', dest='host',
@@ -41,6 +44,12 @@ class Sicario:
 			else:
 				log.log('Sicario is up to date.')
 
+		log.log('Loading modules...')
+
+		self.module_manager = modulemanager.ModuleManager()
+		modules = self.module_manager.load_modules()
+		log.log('{} module(s) loaded successfuly! {} failed'.format(modules[1], modules[2]))
+
 		try:
 			db = database.Database()
 		except (IOError, TypeError) as e:
@@ -57,11 +66,12 @@ class Sicario:
 		log.log('Starting listener at {}:{}...'.format(args.host, args.port))
 		
 		try:
-			listener.listen(args.host, int(args.port), socket_client.Client)
+			listener.listen(args.host, int(args.port), self.module_manager)
 		except IOError as e:
 			log.log('Exception: {}'.format(e))
 			log.log('Failed to start listener! Exiting..')
 			sys.exit()
+
 		
 	def exit (self):
 		log.log('Exitting...')
