@@ -11,6 +11,8 @@ import database
 import time,hashlib
 
 class Client:
+	fillable_data = ['architecture', 'system', 'system_ver', 'ram', 'interval']
+
 	def __init__ (self, address, socket):
 		self.address = address
 		self.socket = socket
@@ -27,16 +29,9 @@ class Client:
 			db.handler.commit()
 
 			if self.pending_job['type'] == 'get':
-				if self.pending_job['payload'] == 'architecture':
-					db.cursor.execute('''UPDATE clients SET architecture = %s WHERE id = %s''', [command, self.id])
-				elif self.pending_job['payload'] == 'system':
-					db.cursor.execute('''UPDATE clients SET system = %s WHERE id = %s''', [command, self.id])
-				elif self.pending_job['payload'] == 'system_ver':
-					db.cursor.execute('''UPDATE clients SET system_ver = %s WHERE id = %s''', [command, self.id])
-				elif self.pending_job['payload'] == 'ram':
-					db.cursor.execute('''UPDATE clients SET ram = %s WHERE id = %s''', [command, self.id])
-				elif self.pending_job['payload'] == 'interval':
-					db.cursor.execute('''UPDATE clients SET interval = %s WHERE id = %s''', [command, self.id])
+				if self.pending_job['payload'] in self.fillable_data:
+					db.cursor.execute('''UPDATE clients SET {} = %s WHERE id = %s'''.format(self.pending_job['payload']), [command, self.id])
+	
 			db.handler.commit()
 			db.handler.close()
 
@@ -145,9 +140,7 @@ class Client:
 		if not client:
 			return False
 
-		fillable_data = ['architecture', 'system', 'system_ver', 'ram']
-
-		for data in fillable_data:
+		for data in self.fillable_data:
 			if not client[data]:
 				db.cursor.execute('''INSERT INTO jobs (userkey, type, payload) VALUES (%s, %s, %s)''', [self.key, 'get', data])
 
