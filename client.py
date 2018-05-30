@@ -11,7 +11,7 @@ import database
 import time,hashlib
 
 class Client:
-	fillable_data = ['architecture', 'system', 'system_ver', 'ram', 'interval']
+	fillable_data = ['architecture', 'system', 'system_ver', 'ram', 'interval', 'is_root']
 
 	def __init__ (self, address, socket):
 		self.address = address

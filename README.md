@@ -66,6 +66,7 @@ with correct frames etc), the server will know what are you returning.
 | get interval | return interval |
 | get system_ver | return system version |
 | get ram | return total ram in megabytes |
+| get is_root | return 0 or 1, if process is running as root/admin user |
 
 ## Modules 
 

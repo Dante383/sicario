@@ -19,11 +19,14 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `clients` (
   `id` int(11) NOT NULL,
-  `userkey` varchar(32) NOT NULL,
+  `userkey` varchar(32) CHARACTER SET utf8 NOT NULL,
   `ip` varchar(16) NOT NULL,
-  `interval` int(11) DEFAULT 60,
+  `interval` int(11) NOT NULL DEFAULT '60',
   `architecture` varchar(8) DEFAULT NULL,
   `system` varchar(16) DEFAULT NULL,
+  `system_ver` text,
+  `ram` int(11) DEFAULT NULL COMMENT 'mb',
+  `is_root` int(11) DEFAULT NULL,
   `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `notes` text DEFAULT NULL
