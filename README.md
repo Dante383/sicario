@@ -1,5 +1,7 @@
 # Sicario
 
+**07.12.2020: Warning: this README is cringe as fuck, proceed with caution** 
+
 Sicario is a C&C server written in Python, with clients in... okay, there are not many clients currently written. Huge TODO. Anyway,
 it's main purpose it to manage ~your~ (okay i can't control how you will use it okay) devices with clients installed. Currently it supports
 only shell commands executions, but it's WIP. Stay tuned or contribute
